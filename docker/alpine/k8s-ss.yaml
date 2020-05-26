@@ -1,0 +1,52 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ss-libev
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ss-libev
+  namespace: ss-libev
+spec:
+  type: NodePort
+  selector:
+    app: ss-libev
+  ports:
+    - protocol: TCP
+      nodePort: 8388
+      port: 8388
+    - protocol: UDP
+      nodePort: 8388
+      port: 8388
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ss-libev
+  namespace: ss-libev
+spec:
+  minReadySeconds: 6
+  selector:
+    matchLabels:
+      app: ss-libev
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ss-libev
+    spec:
+      containers:
+        - name: ss-libev
+          image: shadowsocks/shadowsocks-libev
+          imagePullPolicy: Always
+          env:
+            - name: METHOD
+              value: "aes-256-gcm"
+            - name: PASSWORD
+              value: "9MLSpPmNt"
+            - name: SERVER_PORT
+              value: "8388"
